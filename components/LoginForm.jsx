@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router"; // Updated import
 import { signIn } from "next-auth/react";
 
 const LoginForm = () => {
@@ -33,7 +33,6 @@ const LoginForm = () => {
       }
 
       router.replace("dashboard");
-
     } catch (error) {
       console.log(error);
     }
@@ -66,7 +65,7 @@ const LoginForm = () => {
           )}
 
           <Link href={"/register"} className="text-sm mt-3 text-right">
-            Don't have an account?
+            Don&apos;t have an account?
             <span className="underline">Register</span>
           </Link>
         </form>
