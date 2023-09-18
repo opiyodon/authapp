@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -9,35 +10,53 @@ const RegisterForm = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const router = useRouter();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!name || !email || !password) {
-        setError("All fields are required!");
-        return;
+      setError("All fields are required!");
+      return;
     }
 
     try {
-        const res = await fetch("api/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                name,
-                email,
-                password,
-            }),
-        });
+      const resUserExists = await fetch("api/userExists", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
-        if (res.ok) {
-            const form = e.target;
-            form.reset();
-        } else {
-            console.log("User registration failed!");
-        }
+      const { user } = await resUserExists.json();
+
+      if (user) {
+        setError("User already exists!");
+        return;
+      }
+
+      const res = await fetch("api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+
+      if (res.ok) {
+        const form = e.target;
+        form.reset();
+        router.push("/");
+      } else {
+        console.log("User registration failed!");
+      }
     } catch (error) {
-        console.log("Error during registration: ", error);
+      console.log("Error during registration: ", error);
     }
   };
 
@@ -46,10 +65,7 @@ const RegisterForm = () => {
       <div className="shadow-lg p-5 rounded-lg border-t-4 border-green-400">
         <h1 className="text-xl font-bold my-4">Register</h1>
 
-        <form 
-            className="flex flex-col gap-3"
-            onSubmit={handleSubmit}
-        >
+        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <input
             onChange={(e) => setName(e.target.value)}
             type="text"
