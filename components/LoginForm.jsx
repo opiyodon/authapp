@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/router"; // Updated import
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 const LoginForm = () => {
